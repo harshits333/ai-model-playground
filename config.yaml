@@ -1,0 +1,26 @@
+providers:
+  xai:
+    api_key: "xai-uNUmGRbBtHPWKI0djc0hGCEpsaaaipUNCviAVaaRA1sGRiRDoi1Y7IfRVGBq6nyYnjOZEz1x2XlqDtNp"
+    base_url: "https://api.x.ai/v1"
+    model: "grok-3-latest"
+    price_per_token:
+      input: 0.00001
+      output: 0.00003
+    rate_limit: 5
+    rate_limit_window: 60
+  openai:
+    api_key: "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"
+    model: "gpt-4o"
+    price_per_token:
+      input: 0.000005
+      output: 0.000015
+    rate_limit: 5
+    rate_limit_window: 60
+  anthropic:
+    api_key: "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"
+    model: "claude-3-opus-20240229"
+    price_per_token:
+      input: 0.000015
+      output: 0.000075
+    rate_limit: 5
+    rate_limit_window: 60
