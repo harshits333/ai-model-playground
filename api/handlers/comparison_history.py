@@ -1,11 +1,11 @@
 from fastapi import HTTPException
 from typing import List
 from sqlalchemy.orm import joinedload
-from models.api_response import ComparisonResponse
+from models.api_response import ComparisonDBResponse
 from repositories.comparison import Comparison
 from database import SessionLocal
 
-def get_comparison_history() -> List[ComparisonResponse]:
+def get_comparison_history() -> List[ComparisonDBResponse]:
     """
     Retrieve all historical comparisons with their model responses.
     """

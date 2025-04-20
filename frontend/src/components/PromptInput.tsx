@@ -4,17 +4,20 @@ import { useComparisonStore } from '@/store/comparisonStore'
 
 interface PromptInputProps {
   mb?: number | string
+  prompt: string
+  setPrompt: (prompt: string) => void
 }
 
-function PromptInput({ mb }: PromptInputProps) {
+function PromptInput({ mb, prompt, setPrompt }: PromptInputProps) {
+  // Remove the local prompt state:
+  // const [prompt, setPrompt] = useState('')
   const [showSuccess, setShowSuccess] = useState(false)
-  const [prompt, setPrompt] = useState('')
   const { responses, isLoading, isSaving, isSaved, error, submitComparison, saveComparison  } = useComparisonStore()
 
   useEffect(() => {
     if (isSaved) {
       setShowSuccess(true)
-      const timer = setTimeout(() => setShowSuccess(false), 3000) // Hide after 3 seconds
+      const timer = setTimeout(() => setShowSuccess(false), 1000) // Hide after 3 seconds
       return () => clearTimeout(timer)
     }
   }, [isSaved])
@@ -23,7 +26,7 @@ function PromptInput({ mb }: PromptInputProps) {
     if (!prompt.trim()) return
     try {
       useComparisonStore.setState({ isSaved: false, isSaving: false })
-      await submitComparison(prompt)
+      await submitComparison(prompt) // The store will handle clearing responses
     } catch (error) {
       console.error('Failed to submit comparison:', error)
     }

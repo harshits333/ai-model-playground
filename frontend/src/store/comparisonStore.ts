@@ -30,7 +30,7 @@ export const useComparisonStore = create<ComparisonState>((set, get) => ({
   isSaved: false,
   submitComparison: async (prompt: string) => {
     try {
-      set({ isLoading: true, error: null })
+      set({ isLoading: true, error: null, responses: {} }) // Clear previous responses
       
       const response = await fetch('/api/comparison', {
         method: 'POST',

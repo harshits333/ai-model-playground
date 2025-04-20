@@ -23,3 +23,9 @@ class ModelResponse(BaseModel):
 class ComparisonResponse(BaseModel):
     user_prompt: str
     responses: List[ModelResponse]
+
+class ComparisonDBResponse(BaseModel):
+    id: int
+    created_at: datetime
+    user_prompt: str
+    responses: List[ModelResponse]
