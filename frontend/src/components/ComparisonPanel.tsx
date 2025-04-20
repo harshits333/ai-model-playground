@@ -37,7 +37,7 @@ function ComparisonPanel({ title }: ComparisonPanelProps) {
   return (
     <Card h="600px" display="flex" flexDirection="column">
       <CardHeader pb={2}>
-        <Heading size="md" color="white">{"[" + responses[title].provider + "] " + responses[title]?.model || title}</Heading>
+        <Heading size="md" color="white">{responses[title] ? `[${responses[title].provider}] ${responses[title].model}` : title}</Heading>
       </CardHeader>
       <CardBody
         ref={responseRef}
@@ -60,7 +60,6 @@ function ComparisonPanel({ title }: ComparisonPanelProps) {
           <Text color="gray.500">Generating response...</Text>
         ) : responses[title] ? (
           <VStack align="stretch" spacing={4}>
-            <Text whiteSpace="pre-wrap">{responses[title].content}</Text>
             <Box flex="1" overflowY="auto">
               <Text whiteSpace="pre-wrap">{responses[title].content}</Text>
             </Box>
@@ -72,18 +71,24 @@ function ComparisonPanel({ title }: ComparisonPanelProps) {
       <CardFooter pb={2}>
       <Box bg="black.100" p={4} position="sticky" bottom={0} zIndex={1} width="100%" height="auto">
               <StatGroup flexWrap="wrap" justifyContent="space-between">
-                <Stat size="sm" flex="1 1 30%">
-                  <StatLabel color="blue.500">Tokens</StatLabel>
-                  <StatNumber color="blue.500">{responses[title].total_tokens}</StatNumber>
-                </Stat>
-                <Stat size="sm" flex="1 1 30%">
-                  <StatLabel color="green.500">Latency</StatLabel>
-                  <StatNumber color="green.500">{responses[title].latency.toFixed(2)}s</StatNumber>
-                </Stat>
-                <Stat size="sm" flex="1 1 30%">
-                  <StatLabel color="red.500">Cost</StatLabel>
-                  <StatNumber color="red.500">${responses[title].cost.toFixed(5)}</StatNumber>
-                </Stat>
+                {responses[title]?.total_tokens && (
+                  <Stat size="sm" flex="1 1 30%">
+                    <StatLabel color="blue.500">Tokens</StatLabel>
+                    <StatNumber color="blue.500">{responses[title]?.total_tokens}</StatNumber>
+                  </Stat>
+                )}
+                {responses[title]?.latency && (
+                  <Stat size="sm" flex="1 1 30%">
+                    <StatLabel color="green.500">Latency</StatLabel>
+                    <StatNumber color="green.500">{responses[title]?.latency.toFixed(2)}s</StatNumber>
+                  </Stat>
+                )}
+                {responses[title]?.cost && (
+                  <Stat size="sm" flex="1 1 30%">
+                    <StatLabel color="red.500">Cost</StatLabel>
+                    <StatNumber color="red.500">${responses[title]?.cost.toFixed(5)}</StatNumber>
+                  </Stat>
+                )}
                 {/* Add more stats here as needed */}
               </StatGroup>
             </Box>
