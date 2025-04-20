@@ -18,6 +18,7 @@ class AnthropicService(BaseAIService):
         self.price_per_token = anthropic_config["price_per_token"]
         
         self.rate_limiter = RateLimiter(
+            entity="anthropic",
             rate_limit=anthropic_config["rate_limit"],
             rate_limit_window=anthropic_config["rate_limit_window"]
         )

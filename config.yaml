@@ -1,3 +1,7 @@
+api:
+  rate_limit: 2
+  rate_limit_window: 60
+
 providers:
   xai:
     api_key: "xai-uNUmGRbBtHPWKI0djc0hGCEpsaaaipUNCviAVaaRA1sGRiRDoi1Y7IfRVGBq6nyYnjOZEz1x2XlqDtNp"

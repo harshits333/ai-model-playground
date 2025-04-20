@@ -22,6 +22,7 @@ class XAIService(BaseAIService):
         self.price_per_token = xai_config["price_per_token"]
         
         self.rate_limiter = RateLimiter(
+            entity="xai",
             rate_limit=xai_config["rate_limit"],
             rate_limit_window=xai_config["rate_limit_window"]
         )

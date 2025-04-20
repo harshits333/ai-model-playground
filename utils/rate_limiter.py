@@ -5,7 +5,9 @@ class RateLimiter:
     Rate limiter that works in seconds.
     rate_limit_window parameter should be provided in seconds.
     """
-    def __init__(self, rate_limit: int, rate_limit_window: int):
+    _instances = {}
+    
+    def __init__(self, entity: str, rate_limit: int, rate_limit_window: int):
         """
         Initialize rate limiter.
         Args:
@@ -14,18 +16,20 @@ class RateLimiter:
         """
         self.rate_limit = rate_limit
         self.rate_limit_window = rate_limit_window
-        self.last_called = 0
-        self.call_count = 0
+        self.entity = entity
+        if self.entity not in RateLimiter._instances:
+            RateLimiter._instances[self.entity] = {'last_called': 0, 'call_count': 0}
 
     def check_limit(self) -> bool:
         current_time = time.time()
+        instance_data = RateLimiter._instances[self.entity]
         
-        if (current_time - self.last_called) > self.rate_limit_window:
-            self.call_count = 0
-            self.last_called = current_time
+        if (current_time - instance_data['last_called']) > self.rate_limit_window:
+            instance_data['call_count'] = 0
+            instance_data['last_called'] = current_time
         
-        if self.call_count >= self.rate_limit:
+        if instance_data['call_count'] >= self.rate_limit:
             return False
             
-        self.call_count += 1
+        instance_data['call_count'] += 1
         return True

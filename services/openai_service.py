@@ -1,5 +1,5 @@
 import yaml
-from typing import Optional
+from typing import Union
 from openai import OpenAI
 from models.provider_response import AIResponse, ErrorResponse
 from pathlib import Path
@@ -18,6 +18,7 @@ class OpenAIService(BaseAIService):
         self.price_per_token = openai_config["price_per_token"]
         
         self.rate_limiter = RateLimiter(
+            entity="openai",
             rate_limit=openai_config["rate_limit"],
             rate_limit_window=openai_config["rate_limit_window"]
         )
@@ -28,7 +29,7 @@ class OpenAIService(BaseAIService):
     def get_model_name(self) -> str:
         return self.model
         
-    async def get_completion(self, prompt: str) -> Optional[AIResponse]:
+    async def get_completion(self, prompt: str) -> Union[AIResponse, ErrorResponse]:
         try:
             if not self.rate_limiter.check_limit():
                 return ErrorResponse(
