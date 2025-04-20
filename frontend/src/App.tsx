@@ -21,7 +21,7 @@ function App() {
         </Container>
       </Box>
     </QueryClientProvider>
-  )
+  );
 }
 
-export default App
+export default App;

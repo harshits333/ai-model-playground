@@ -15,14 +15,19 @@ interface ModelResponse {
 interface ComparisonState {
   responses: Record<string, ModelResponse>
   isLoading: boolean
+  isSaving: boolean
   error: string | null
+  isSaved: boolean
   submitComparison: (prompt: string) => Promise<void>
+  saveComparison: (prompt: string) => Promise<void>
 }
 
-export const useComparisonStore = create<ComparisonState>((set) => ({
+export const useComparisonStore = create<ComparisonState>((set, get) => ({
   responses: {},
   isLoading: false,
+  isSaving: false,
   error: null,
+  isSaved: false,
   submitComparison: async (prompt: string) => {
     try {
       set({ isLoading: true, error: null })
@@ -66,6 +71,33 @@ export const useComparisonStore = create<ComparisonState>((set) => ({
       set({ responses: formattedResponses, error: null })
     } catch (error) {
       set({ error: (error as Error).message, responses: {} })
+      throw error
+    } finally {
+      set({ isLoading: false })
+    }
+  },
+
+  saveComparison: async (prompt: string) => {
+    try {
+      set({ isSaving: true, error: null, isSaved: false })
+      
+      const response = await fetch(`/api/comparison/save?actual_prompt=${encodeURIComponent(prompt)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(Object.values(get().responses)),
+      })
+
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.detail || 'Failed to save comparison')
+      }
+
+      set({ isSaved: true })
+    } catch (error) {
+      set({ error: (error as Error).message })
       throw error
     } finally {
       set({ isLoading: false })

@@ -1,7 +1,9 @@
+import yaml
 from fastapi import HTTPException
 from typing import Any
 from models.provider_response import ErrorResponse
 from utils.rate_limiter import RateLimiter
+from pathlib import Path
 
 def validate_request(request: Any, required_field: str) -> None:
     """
@@ -48,8 +50,12 @@ def validate_rate_limit() -> None:
     with open(config_path) as f:
         conf = yaml.safe_load(f)
     config = conf["api"]
-
-    if not RateLimiter.check_limit(entity="api", rate_limit=config["rate_limit"], rate_limit_window=config["rate_limit_window"]):
+    rate_limiter = RateLimiter(
+                entity="api",
+                rate_limit=config["rate_limit"],
+                rate_limit_window=config["rate_limit_window"]
+            )
+    if not rate_limiter.check_limit():
         raise HTTPException(
             status_code=429,
             detail=[{"msg": "Rate limit exceeded"}]

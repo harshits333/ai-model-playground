@@ -1,5 +1,5 @@
 import { Box, Button, Textarea, VStack } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useComparisonStore } from '@/store/comparisonStore'
 
 interface PromptInputProps {
@@ -7,12 +7,22 @@ interface PromptInputProps {
 }
 
 function PromptInput({ mb }: PromptInputProps) {
+  const [showSuccess, setShowSuccess] = useState(false)
   const [prompt, setPrompt] = useState('')
-  const { submitComparison, isLoading } = useComparisonStore()
+  const { responses, isLoading, isSaving, isSaved, error, submitComparison, saveComparison  } = useComparisonStore()
 
+  useEffect(() => {
+    if (isSaved) {
+      setShowSuccess(true)
+      const timer = setTimeout(() => setShowSuccess(false), 3000) // Hide after 3 seconds
+      return () => clearTimeout(timer)
+    }
+  }, [isSaved])
+  
   const handleSubmit = async () => {
     if (!prompt.trim()) return
     try {
+      useComparisonStore.setState({ isSaved: false, isSaving: false })
       await submitComparison(prompt)
     } catch (error) {
       console.error('Failed to submit comparison:', error)
@@ -40,6 +50,37 @@ function PromptInput({ mb }: PromptInputProps) {
       >
         Compare Models
       </Button>
+      {Object.keys(responses).length > 0 && (
+        <>
+            <Button 
+            onClick={() => saveComparison(prompt)}
+            disabled={isSaving || isSaved}
+            colorScheme="orange"
+            alignSelf="flex-end"
+            >
+            {isSaved ? 'Saved' : 'Save Comparison'}
+            </Button>
+            {showSuccess && (
+                <Box 
+                    position="fixed" 
+                    top="4" 
+                    left="50%" 
+                    transform="translateX(-50%)"
+                    bg="green.500" 
+                    color="white" 
+                    px={4}
+                    py={2}
+                    borderRadius="md"
+                    textAlign="center"
+                    zIndex="toast"
+                    boxShadow="md"
+                    maxWidth="90%"
+                >
+                    Successfully Saved!
+                </Box>
+                )}
+        </>
+        )}
     </VStack>
   )
 }

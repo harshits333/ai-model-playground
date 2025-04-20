@@ -5,10 +5,8 @@ from models.api_request import ComparisonRequest
 from models.api_response import ComparisonResponse, TimedCallResponse
 from services import OpenAIService, AnthropicService, XAIService
 from services.base_service import BaseAIService
-from database import SessionLocal
-from repositories.comparison_repository import save_comparison
 from utils.response_processor import process_response
-from utils.validation import validate_request, validate_error_response
+from utils.validation import validate_request, validate_error_response, validate_rate_limit
 
 async def timed_call(service: BaseAIService, prompt: str):
     start_time = datetime.now()
@@ -32,6 +30,7 @@ async def create_comparison(request: ComparisonRequest) -> ComparisonResponse :
     """
 
     validate_request(request, "prompt")
+    validate_rate_limit()
     
     actual_prompt = request.prompt
     services = [OpenAIService(), AnthropicService(), XAIService()]
@@ -50,10 +49,7 @@ async def create_comparison(request: ComparisonRequest) -> ComparisonResponse :
     validate_error_response(responses)
     processed_responses = [process_response(response.result, response.duration) for response in responses]
     
-    # Save to database
-    db = SessionLocal()
-    try:
-        comparison = save_comparison(db, actual_prompt, processed_responses)
-        return ComparisonResponse.from_db(comparison, processed_responses)
-    finally:
-        db.close()
+    return ComparisonResponse(
+        user_prompt = actual_prompt,
+        responses = processed_responses
+    )

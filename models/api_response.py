@@ -19,19 +19,7 @@ class ModelResponse(BaseModel):
     total_tokens: int
     cost: float
     latency: float
-    error: Optional[str] = None 
 
 class ComparisonResponse(BaseModel):
-    id: int
     user_prompt: str
-    created_at: datetime
     responses: List[ModelResponse]
-
-    @classmethod
-    def from_db(cls, comparison, processed_responses):
-        return cls(
-            id=comparison.id,
-            user_prompt=comparison.user_prompt,
-            created_at=comparison.created_at,
-            responses=processed_responses
-        )
